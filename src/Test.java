@@ -1,6 +1,8 @@
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import static com.sun.deploy.config.Config.checkClassName;
+
 public class Test {
     public static void main(String[] args) {
 
@@ -22,62 +24,54 @@ public class Test {
         Print how many students are ScienceStudent with message -> "Science students = {numberOfScienceStudents}"
          */
         ArrayList<Student> students = new ArrayList<>();
-        Scanner input = new Scanner(System.in);
-        do {
+        Scanner scanner = new Scanner(System.in);
+        while (students.size() < 3) {
             System.out.println(UserQuestions.askToJoin);
-            String ans = input.nextLine();
-            if(ans.toUpperCase().startsWith("Y")){
+            String answer = scanner.nextLine();
+            if (answer.toLowerCase().startsWith("y")) {
                 System.out.println(UserQuestions.askFirstName);
-                String name  = input.nextLine();
+                String firstName = scanner.nextLine();
                 System.out.println(UserQuestions.askLastName);
-                String lName = input.nextLine();
+                String lastName = scanner.nextLine();
                 System.out.println(UserQuestions.askAge);
-                int age = input.nextInt();
-                input.nextLine();
-                try {
-                    Permission.checkAge(age);
-                    System.out.println("You are allowed!");
+                int age = Integer.parseInt(scanner.nextLine());
+                try{
+                    if( Permission.checkAge(age))break;
+
+                    System.out.println(UserQuestions.askGender);
+                    String gender = scanner.nextLine();
+                    System.out.println(UserQuestions.askClassName);
+                    String className = scanner.nextLine();
+                    checkClassName(className);
+                    Student student = null;
+                    try{
+                        if (Permission.checkClassName(className))System.out.println("Congratulations!You are registered for "+className+ "class.");;}
+                    catch(RuntimeException e){
+                        System.out.println(e.getMessage());
+                    }
+                    students.add(student);
+
                 } catch (RuntimeException e) {
                     System.out.println(e.getMessage());
-                }
 
-                System.out.println(UserQuestions.askGender);
-                String gender =  input.nextLine();
+                }
+            } else if (answer.toLowerCase().startsWith("n")) {
 
-                System.out.println(UserQuestions.askClassName);
-                String className = input.nextLine();
-                try {
-                    Permission.checkClassName(className);
-                    System.out.println("You are enrolled in " + className + " class.");
-                } catch (RuntimeException e) {
-                    System.out.println(e.getMessage());
-                }
-
-                if(className.toLowerCase().startsWith("math")){
-                    MathStudent mathStudent = new MathStudent(name, lName, age,gender, className);
-                    students.add(mathStudent);
-                    System.out.println("Congratulations! You are registered for " + mathStudent.getClassName() + " class.");
-                }
-                if(className.toLowerCase().startsWith("science")) {
-                    ScienceStudent   scienceStudent = new ScienceStudent(name, lName, age,gender, className);
-                    students.add(scienceStudent);
-                }
             }
+        }
 
-        }while(students.size() <= 2);
+
 
 
         int mathCount = 0;
         int scienceCount = 0;
         for (Student student : students) {
             System.out.println(student);
-            if(student.getClassName().equalsIgnoreCase("math"))mathCount++;
+            if (student.getClassName().equalsIgnoreCase("math")) mathCount++;
             else {
                 scienceCount++;
             }
         }
         System.out.println("Math students = " + mathCount);
         System.out.println("Science students = " + scienceCount);
-
-    }
-}
+    }}
